@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 exports.getUsers = async () => {
     return await User.find({});
 };
@@ -18,7 +19,7 @@ exports.createUser = async (userData) => {
 };
 
 exports.updateUserAvatar = async (id, avatarUrl) => {
-    console.log("Avatar URL: ", avatarUrl);
+    // console.log("Avatar URL: ", avatarUrl);
     return await User.findByIdAndUpdate(id, { avatar: avatarUrl }, { new: true });
 };
 
@@ -64,5 +65,21 @@ exports.addFavoriteEstablishment = async ({ userId, establishmentId }) => {
 
 exports.removeFavoriteEstablishment = async ({ userId, establishmentId }) => {
     return await User.findByIdAndUpdate(userId, { $pull: { favoriteEstablishments: establishmentId } }, { new: true });
+};
+
+exports.loginWithEmailAndPassword = async ({ email, password }) => {
+    const user = await User.findOne({ email: email });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        return null;
+    }
+    const token = jwt.sign({ sub: user._id, user: user }, process.env.JWT_SECRET, { expiresIn: '12h' });
+    return token;
+};
+
+exports.registerWithEmailAndPassword = async ({ name, type, email_type , email, password }) => {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, type, email_type, email, password: hashedPassword });
+    return user;
 };
 

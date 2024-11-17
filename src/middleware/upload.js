@@ -9,14 +9,12 @@ const ensureDirectoryExists = (dirPath) => {
     }
 };
 
-// Factory function to create upload middleware
+
 exports.createUploadMiddleware = ({ 
     directory = 'uploads', 
-    filePrefix = 'file',
     fieldName = 'file',
-    maxSize = 5 * 1024 * 1024 // 5MB default
+    maxSize = 5 * 1024 * 1024 
 } = {}) => {
-    // Create absolute path for upload directory
     const uploadDir = path.join(__dirname, '../../', directory);
     ensureDirectoryExists(uploadDir);
 
@@ -29,20 +27,8 @@ exports.createUploadMiddleware = ({
             'image/webp': '.webp',
             'image/svg+xml': '.svg'
         };
-        return mimeToExt[mimeType] || '.jpg'; // Default to .jpg if unknown
+        return mimeToExt[mimeType] || '.jpg';
     };
-    
-    // Configure storage
-    const storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-            cb(null, uploadDir);
-        },
-        filename: (req, file, cb) => {
-            const userId = req.body._id;
-            const extension = getExtensionFromMimeType(file.mimetype);
-            cb(null, `${userId}${extension}`);
-        }
-    });
 
     const fileFilter = (req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -51,37 +37,52 @@ exports.createUploadMiddleware = ({
         cb(null, true);
     };
 
+    // Use memory storage instead of disk storage
     const upload = multer({ 
-        storage: storage,
+        storage: multer.memoryStorage(),
         fileFilter: fileFilter,
         limits: {
             fileSize: maxSize
         }
     });
 
-    // Return middleware
     return (req, res, next) => {
-        upload.single(fieldName)(req, res, (err) => {
-            if (err instanceof multer.MulterError) {
-                return next(new Error(`Upload error: ${err.message}`));
-            } else if (err) {
-                return next(err);
+        upload.single(fieldName)(req, res, async (err) => {
+            if (err) {
+                return next(err instanceof multer.MulterError 
+                    ? new Error(`Upload error: ${err.message}`) 
+                    : err);
             }
             
             if (!req.file) {
                 return next(new Error('Please select a file to upload'));
             }
 
-            // Add the file path to the request object
-            req.uploadedFile = {
-                filename: req.file.filename,
-                path: `/${directory}/${req.file.filename}`,
-                originalname: req.file.originalname,
-                mimetype: req.file.mimetype,
-                size: req.file.size
-            };
-            
-            next();
+            try {
+                const userId = req.body._id;
+                if (!userId) {
+                    return next(new Error('UserId is required'));
+                }
+
+                const extension = getExtensionFromMimeType(req.file.mimetype);
+                const filename = `${userId}${extension}`;
+                const filePath = path.join(uploadDir, filename);
+
+                // Save file after body is available
+                await fs.promises.writeFile(filePath, req.file.buffer);
+
+                req.uploadedFile = {
+                    filename,
+                    path: `/${directory}/${filename}`,
+                    originalname: req.file.originalname,
+                    mimetype: req.file.mimetype,
+                    size: req.file.size
+                };
+
+                next();
+            } catch (error) {
+                next(error);
+            }
         });
     };
 };

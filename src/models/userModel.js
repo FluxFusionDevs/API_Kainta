@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
         enum: ['ADMIN', 'OWNER', 'USER'],  // Add your UserTypes here
         required: true
     },
-    account_type: {
+    email_type: {
         type: String,
         enum: ['GOOGLE', 'EMAIL', 'APPLE'],
         required: true

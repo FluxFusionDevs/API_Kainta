@@ -31,6 +31,11 @@ const establishmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    barangay: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Barangay',
+        required: true
+    },
     quisines: [{
         type: String
     }],

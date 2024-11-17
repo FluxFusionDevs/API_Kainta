@@ -8,7 +8,8 @@ const connectDB = require('./database');
 const authRoutes = require('./routes/authRoutes');
 const app = express();
 const session = require('express-session');
-
+const path = require('path');
+const bodyParser = require('body-parser');
 //Database connection
 connectDB();
 
@@ -16,6 +17,7 @@ connectDB();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: 'your_secret_key',
@@ -27,6 +29,7 @@ app.use(session({
 // Routes
 app.use('/api', routes);
 app.use('/auth', authRoutes);
+app.use('/uploads', express.static('uploads'));
 
 // Error handling
 app.use(errorHandler);

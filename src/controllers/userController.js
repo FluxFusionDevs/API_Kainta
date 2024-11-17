@@ -1,7 +1,6 @@
 const userService = require("../services/userService");
 const logger = require("../utils/logger");
 const { uploadSingleImage } = require("./uploadController");
-
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await userService.getUsers();
@@ -35,11 +34,8 @@ exports.getUserById = async (req, res, next) => {
 exports.updateUserAvatar = async (req, res, next) => {
     try {
       const userId = req.body._id;
-      const fileExtension = req.file.filename.split('.').pop();
-      // Create the avatar URL path from the uploaded file
-      const avatarUrl = `/uploads/profilePics/${userId}.${fileExtension}`;
       // Update user with new avatar URL
-      const user = await userService.updateUserAvatar(userId, avatarUrl);
+      const user = await userService.updateUserAvatar(userId, req.uploadedFile.path);
       res.json(user);
     } catch (error) {
       logger.error("Error in updateUserAvatar controller:", error);
@@ -59,6 +55,27 @@ exports.updateUserAvatar = async (req, res, next) => {
   exports.removeFavoriteEstablishment = async (req, res, next) => {
     try {
       const user = await userService.removeFavoriteEstablishment(req.body);
+      res.json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  exports.loginWithEmailAndPassword = async (req, res, next) => {
+    try {
+      const token = await userService.loginWithEmailAndPassword(req.body);
+      if (!token) {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+      res.json(token);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  exports.registerWithEmailAndPassword = async (req, res, next) => {
+    try {
+      const user = await userService.registerWithEmailAndPassword(req.body);
       res.json(user);
     } catch (error) {
       next(error);

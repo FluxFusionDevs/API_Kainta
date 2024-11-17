@@ -7,3 +7,7 @@ exports.createBarangays = async (barangayNames) => {
 exports.getBarangays = async () => {
     return await Barangay.find();
 };
+
+exports.uploadBarangayImage = async (barangayId, imageUrl) => {
+    return await Barangay.findByIdAndUpdate(barangayId, { image: imageUrl }, { new: true });
+}
