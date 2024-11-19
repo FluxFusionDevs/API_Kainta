@@ -6,6 +6,7 @@ router.get("/get-establishments", establishmentController.getEstablishments);
 router.get("/get-establishment/:id", establishmentController.getEstablishmentById);
 router.post("/create-establishment", establishmentController.createEstablishment);
 router.put("/update-establishment", establishmentController.updateEstablishment);
+router.delete("/delete-establishment", establishmentController.deleteEstablishment);
 router.get("/get-barangays", establishmentController.getBarangays); // New route to get barangays
 
 
