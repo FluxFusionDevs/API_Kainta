@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 // Helper function to ensure directory exists
 const ensureDirectoryExists = (dirPath) => {
@@ -59,13 +60,13 @@ exports.createUploadMiddleware = ({
             }
 
             try {
-                const userId = req.body._id;
-                if (!userId) {
-                    return next(new Error('UserId is required'));
+                const id = req.body._id ?? uuidv4();
+                if (!id) {
+                    return next(new Error('id is required'));
                 }
 
                 const extension = getExtensionFromMimeType(req.file.mimetype);
-                const filename = `${userId}${extension}`;
+                const filename = `${id}${extension}`;
                 const filePath = path.join(uploadDir, filename);
 
                 // Save file after body is available
