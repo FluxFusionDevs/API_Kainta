@@ -36,6 +36,15 @@ exports.updateEstablishment = async (req, res, next) => {
     }
 }
 
+exports.deleteEstablishment = async (req, res, next) => {
+    try {
+        const deletedEstablishment = await establishmentService.deleteEstablishment(req.body._id);
+        res.json(deletedEstablishment);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 exports.getBarangays = async (req, res) => {
     try {
