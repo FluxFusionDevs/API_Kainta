@@ -20,9 +20,7 @@ const establishmentSchema = new mongoose.Schema({
     images: [{
         type: String
     }],
-    menu_items: [{
-        type: foodSchema,
-    }],
+    menu_items: [foodSchema],
     contact_number: {
         type: String,
         required: true
@@ -46,9 +44,34 @@ const establishmentSchema = new mongoose.Schema({
     ratings: [{
         type: ratingSchema,
         default: []
-    }]
+    }],
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 }, {
     timestamps: true
+});
+
+// Pre-save middleware to verify owner status
+establishmentSchema.pre('save', async function(next) {
+    try {
+        const User = mongoose.model('User');
+        const owner = await User.findById(this.owner);
+        
+        if (!owner) {
+            throw new Error('Owner not found');
+        }
+
+        if (!owner.premium && !owner.trial) {
+            throw new Error('Owner must have a premium subscription or be in free trial period');
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
 // Index for location-based queries
