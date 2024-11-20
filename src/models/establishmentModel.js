@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const coordinatesSchema = require('./locationModel');
 const ratingSchema = require('./ratingModel');
 const foodSchema = require('./foodModel');
-
+const logger = require('../utils/logger');
+const User = require('./userModel');
 const establishmentSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -62,7 +63,6 @@ const establishmentSchema = new mongoose.Schema({
 // Pre-save middleware to verify owner status
 establishmentSchema.pre('save', async function(next) {
     try {
-        const User = mongoose.model('User');
         const owner = await User.findById(this.owner);
         
         if (!owner) {
@@ -75,51 +75,55 @@ establishmentSchema.pre('save', async function(next) {
         await User.findByIdAndUpdate(this.owner, {
             owned_establishment: this._id
         });
-
         next();
     } catch (error) {
+        logger.error(error);
         next(error);
     }
 });
 
-establishmentSchema.pre('remove', async function(next) {
-    try {
-        const User = mongoose.model('User');
-        
-        // Find the owner and remove the establishment reference
-        await User.findByIdAndUpdate(this.owner, {
-            owned_establishment: null
-        });
-        
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
-
-establishmentSchema.pre('findOneAndUpdate', async function(next) {
+// Pre findOneAndDelete middleware
+establishmentSchema.pre('findOneAndDelete', async function(next) {
     try {
         const User = mongoose.model('User');
         const establishment = await this.model.findOne(this.getQuery());
         
-        // If owner is being changed
-        if (this._update.owner && establishment.owner.toString() !== this._update.owner.toString()) {
-            // Remove establishment reference from old owner
+        if (establishment) {            
+            // Update (not delete) the user to remove establishment reference
             await User.findByIdAndUpdate(establishment.owner, {
                 owned_establishment: null
             });
-            
-            // Add establishment reference to new owner
-            await User.findByIdAndUpdate(this._update.owner, {
-                owned_establishment: establishment._id
-            });
         }
-        
         next();
     } catch (error) {
+        logger.error('Error in establishment pre-delete middleware:', error);
         next(error);
     }
 });
+
+// establishmentSchema.pre('findOneAndUpdate', async function(next) {
+//     try {
+//         const establishment = await this.model.findOne(this.getQuery());
+        
+//         // If owner is being changed
+//         if (this._update.owner && establishment.owner.toString() !== this._update.owner.toString()) {
+//             // Remove establishment reference from old owner
+//             await User.findByIdAndUpdate(establishment.owner, {
+//                 owned_establishment: null
+//             });
+            
+//             // Add establishment reference to new owner
+//             await User.findByIdAndUpdate(this._update.owner, {
+//                 owned_establishment: establishment._id
+//             });
+//         }
+        
+//         next();
+//     } catch (error) {
+//         logger.error(error);
+//         next(error);
+//     }
+// });
 
 // Index for location-based queries
 establishmentSchema.index({ location: '2dsphere' });
