@@ -47,6 +47,8 @@ exports.createEstablishment = async (establishmentData) => {
     if (!establishment.contact_number) throw new Error('Contact number is required');
     if (!establishment.email) throw new Error('Email is required');
     if (!establishment.operating_hours) throw new Error('Operating hours are required');
+    if (!establishment.barangay) throw new Error('Barangay is required');
+    if (!establishment.owner) throw new Error('Owner is required');
 
     return await establishment.save();
 };
@@ -73,13 +75,17 @@ exports.deleteEstablishment = async (id) => {
         throw new Error('Invalid establishment ID');
     }
 
-    const establishment = await Establishment.findByIdAndDelete(id);
+    const establishment = await Establishment.findByIdAndUpdate(id);
 
     if (!establishment) {
         throw new Error('Establishment not found');
     }
 
     return establishment;
+};
+
+exports.getEstablishmentByBarangay = async (barangay) => {
+    return await Establishment.find({ barangay: barangay });
 };
 
 // Additional useful methods

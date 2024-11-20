@@ -62,3 +62,14 @@ exports.getBarangays = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch barangays" });
     }
 };
+
+
+exports.getEstablishmentByBarangay = async (req, res, next) => {
+    try {
+        const establishment = await establishmentService.getEstablishmentByBarangay(req.query._id);
+        res.json(establishment);
+    } catch (error) {
+        next(error);
+    }
+}
+
