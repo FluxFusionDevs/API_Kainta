@@ -11,7 +11,7 @@ exports.getEstablishments = async (req, res, next) => {
 
 exports.getEstablishmentById = async (req, res, next) => {
     try {
-        const establishment = await establishmentService.getEstablishmentById(req.params.id);
+        const establishment = await establishmentService.getEstablishmentById(req.body._id);
         res.json(establishment);
     } catch (error) {
         next(error);
