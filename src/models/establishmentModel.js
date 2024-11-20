@@ -4,6 +4,7 @@ const ratingSchema = require('./ratingModel');
 const foodSchema = require('./foodModel');
 const logger = require('../utils/logger');
 const User = require('./userModel');
+const documentSchema = require('./documentModel');
 const establishmentSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -55,6 +56,11 @@ const establishmentSchema = new mongoose.Schema({
         type: String,
         enum: ['PENDING', 'APPROVED', 'REJECTED'],
         default: 'PENDING'
+    },
+    documents: {
+        type: [documentSchema],
+        default: [],
+        required: true
     }
 }, {
     timestamps: true

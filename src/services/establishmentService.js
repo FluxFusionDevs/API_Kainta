@@ -1,91 +1,109 @@
-const Establishment = require('../models/establishmentModel');
-const mongoose = require('mongoose');
+const Establishment = require("../models/establishmentModel");
+const mongoose = require("mongoose");
+const documentSchema = require("../models/documentModel");
 
 exports.getEstablishments = async () => {
-    return await Establishment.find()
-        .populate('menu_items')  // Populate the menu items
-        .populate({
-            path: 'ratings',
-            populate: {
-                path: 'user_id',
-                select: 'name avatar'  // Only get user's name and avatar
-            }
-        });
+  return await Establishment.find()
+    .populate("menu_items") // Populate the menu items
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "user_id",
+        select: "name avatar", // Only get user's name and avatar
+      },
+    });
 };
 
 exports.getEstablishmentById = async (id) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new Error('Invalid establishment ID');
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error("Invalid establishment ID");
+  }
 
-    const establishment = await Establishment.findById(id)
-        .populate('menu_items')
-        .populate({
-            path: 'ratings',
-            populate: {
-                path: 'user_id',
-                select: 'name avatar'
-            }
-        });
+  const establishment = await Establishment.findById(id)
+    .populate("menu_items")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "user_id",
+        select: "name avatar",
+      },
+    });
 
-    if (!establishment) {
-        throw new Error('Establishment not found');
-    }
+  if (!establishment) {
+    throw new Error("Establishment not found");
+  }
 
-    return establishment;
+  return establishment;
 };
 
 exports.createEstablishment = async (establishmentData) => {
-    // Ensure _id is set for the new establishment
-    establishmentData._id = new mongoose.Types.ObjectId();
+  // Ensure _id is set for the new establishment
+  establishmentData._id = new mongoose.Types.ObjectId();
 
-    const establishment = new Establishment(establishmentData);
-    
-    // Validate required fields
-    if (!establishment.name) throw new Error('Establishment name is required');
-    if (!establishment.location) throw new Error('Location is required');
-    if (!establishment.contact_number) throw new Error('Contact number is required');
-    if (!establishment.email) throw new Error('Email is required');
-    if (!establishment.operating_hours) throw new Error('Operating hours are required');
-    if (!establishment.barangay) throw new Error('Barangay is required');
-    if (!establishment.owner) throw new Error('Owner is required');
+  const establishment = new Establishment(establishmentData);
 
-    return await establishment.save();
+  // Validate required fields
+  if (!establishment.name) throw new Error("Establishment name is required");
+  if (!establishment.location) throw new Error("Location is required");
+  if (!establishment.contact_number)
+    throw new Error("Contact number is required");
+  if (!establishment.email) throw new Error("Email is required");
+  if (!establishment.operating_hours)
+    throw new Error("Operating hours are required");
+  if (!establishment.barangay) throw new Error("Barangay is required");
+  if (!establishment.owner) throw new Error("Owner is required");
+
+  return await establishment.save();
 };
 
 exports.updateEstablishment = async (updateData) => {
-    if (!mongoose.Types.ObjectId.isValid(updateData._id)) {
-        throw new Error('Invalid establishment ID');
-    }
-    const establishment = await Establishment.findByIdAndUpdate(
-        updateData._id,
-        { $set: updateData },
-        { new: true, runValidators: true }
-    ).populate('menu_items');
+  if (!mongoose.Types.ObjectId.isValid(updateData._id)) {
+    throw new Error("Invalid establishment ID");
+  }
+  const establishment = await Establishment.findByIdAndUpdate(
+    updateData._id,
+    { $set: updateData },
+    { new: true, runValidators: true }
+  ).populate("menu_items");
 
-    if (!establishment) {
-        throw new Error('Establishment not found');
-    }
+  if (!establishment) {
+    throw new Error("Establishment not found");
+  }
 
-    return establishment;
+  return establishment;
 };
 
 exports.deleteEstablishment = async (id) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new Error('Invalid establishment ID');
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error("Invalid establishment ID");
+  }
 
-    const establishment = await Establishment.findByIdAndUpdate(id);
+  const establishment = await Establishment.findByIdAndUpdate(id);
 
-    if (!establishment) {
-        throw new Error('Establishment not found');
-    }
+  if (!establishment) {
+    throw new Error("Establishment not found");
+  }
 
-    return establishment;
+  return establishment;
 };
 
 exports.getEstablishmentByBarangay = async (barangay) => {
-    return await Establishment.find({ barangay: barangay });
+  return await Establishment.find({ barangay: barangay, status: "APPROVED" });
+};
+
+exports.uploadDocument = async ({ establishmentId, name, image }) => {
+  const establishment = await Establishment.findById(establishmentId);
+  if (!establishment) {
+    throw new Error("Establishment not found");
+  }
+  const newDocument = {
+    _id: new mongoose.Types.ObjectId(),
+    name: name,
+    image: image,
+  };
+
+  establishment.documents.push(newDocument);
+  return await establishment.save();
 };
 
 // Additional useful methods

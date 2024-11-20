@@ -73,3 +73,14 @@ exports.getEstablishmentByBarangay = async (req, res, next) => {
     }
 }
 
+
+exports.uploadDocument = async (req, res, next) => {
+    try {
+        req.body.image = req.uploadedFile.path;
+        const document = await establishmentService.uploadDocument(req.body);
+        res.json(document);
+    } catch (error) {
+        next(error);
+    }
+}
+
