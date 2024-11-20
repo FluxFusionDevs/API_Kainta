@@ -15,7 +15,7 @@ const uploadFoodImage = createUploadMiddleware({
 
 router.post("/add", uploadFoodImage, foodController.addFoodItem);
 router.delete("/delete", foodController.deleteFoodItem);
-router.put("/update", foodController.updateFoodItem);
+router.put("/update", uploadFoodImage, foodController.updateFoodItem);
 router.get("/get", foodController.getFoodItem);
 
 module.exports = router;
