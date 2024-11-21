@@ -1,5 +1,6 @@
 const establishmentService = require("../services/establishmentService");
 const axios = require("axios");
+const { cleanAndParseJson } = require("../utils/formDataJsonCleaner");
 exports.getEstablishments = async (req, res, next) => {
     try {
         const establishments = await establishmentService.getEstablishments();
@@ -20,12 +21,21 @@ exports.getEstablishmentById = async (req, res, next) => {
 
 exports.createEstablishment = async (req, res, next) => {
     try {
-        const establishment = await establishmentService.createEstablishment(req.body);
+      
+        // Parse the cleaned JSON string
+        const jsonBody = cleanAndParseJson(req.body.jsonData);
+        console.log(req.uploadedFile);
+        const documentImage = req.uploadedFile.documentImage.path;
+        const documentName = req.body.documentName
+        const establishmentImage = req.uploadedFile.establishmentImage.path;
+
+        const establishment = await establishmentService.createEstablishment(documentName, documentImage, establishmentImage, jsonBody);
         res.status(201).json(establishment);
     } catch (error) {
+        console.error('Error creating establishment:', error);
         next(error);
     }
-}
+};
 
 exports.updateEstablishment = async (req, res, next) => {
     try {
