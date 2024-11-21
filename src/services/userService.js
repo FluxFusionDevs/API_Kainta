@@ -83,3 +83,8 @@ exports.registerWithEmailAndPassword = async ({ name, type, email_type , email, 
     return user;
 };
 
+
+exports.updateUserSubscription = async (userId) => {
+    return await User.findByIdAndUpdate(userId, { $set: { trial: true } }, { new: true });
+};
+
