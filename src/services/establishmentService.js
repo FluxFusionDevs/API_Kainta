@@ -36,12 +36,9 @@ exports.getEstablishmentById = async (id) => {
   return establishment;
 };
 
-exports.createEstablishment = async (establishmentData) => {
+exports.createEstablishment = async (documentName, documentImage, establishmentImage, establishmentData) => {
   // Ensure _id is set for the new establishment
-  establishmentData._id = new mongoose.Types.ObjectId();
-
   const establishment = new Establishment(establishmentData);
-
   // Validate required fields
   if (!establishment.name) throw new Error("Establishment name is required");
   if (!establishment.location) throw new Error("Location is required");
@@ -52,6 +49,13 @@ exports.createEstablishment = async (establishmentData) => {
     throw new Error("Operating hours are required");
   if (!establishment.barangay) throw new Error("Barangay is required");
   if (!establishment.owner) throw new Error("Owner is required");
+ 
+  establishment.image = establishmentImage;
+
+  establishment.documents.push({
+    name: documentName,
+    image: documentImage
+  });
 
   return await establishment.save();
 };
