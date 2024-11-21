@@ -6,10 +6,13 @@ const { createUploadMiddleware } = require('../middleware/upload');
 const router = express.Router();
 
 const uploadAvatar = createUploadMiddleware({
-    directory: 'uploads/profilePics',
-    filePrefix: 'avatar',
-    fieldName: 'profileImage',
-    maxSize: 5 * 1024 * 1024 // 5MB
+    fields: [
+        {
+            directory: "uploads/profilePics",
+            fieldName: "profileImage",
+            maxSize: 5 * 1024 * 1024 // 5MB
+        }
+    ]
 });
 
 router.post('/create-user', userController.createUser);
