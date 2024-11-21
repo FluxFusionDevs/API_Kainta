@@ -1,6 +1,7 @@
 const paymentService = require("../services/paymentService");
 const logger = require("../utils/logger");
 const { PAYMENT_TYPE } = require("../models/paymentModel");
+const  userService  = require("../services/userService");
 
 exports.subscribeTrial = async (req, res, next) => {
   try {
@@ -12,10 +13,10 @@ exports.subscribeTrial = async (req, res, next) => {
         message: "Payment data is required",
       });
     }
-    console.log("Payment Data", paymentData);
     const payment = await paymentService.createPayment(paymentData);
+    const user = await userService.updateUserSubscription(paymentData.user);
 
-    res.status(201).json(payment);
+    res.status(201).json({payment, user});
   } catch (error) {
     logger.error("Error creating trial subscription:", error);
     next(error);
@@ -37,7 +38,7 @@ exports.subscribePremium = async (req, res, next) => {
     const paymentData = {
       ...req.body,
       type: PAYMENT_TYPE.PREMIUM,
-      proofOfPayment: req.uploadedFile.path,
+      proofOfPayment: req.uploadedFile.paymentImage.path
     };
 
     logger.info("Creating premium subscription:", paymentData);
