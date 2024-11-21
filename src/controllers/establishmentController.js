@@ -76,7 +76,7 @@ exports.getBarangays = async (req, res) => {
 
 exports.getEstablishmentByBarangay = async (req, res, next) => {
     try {
-        const establishment = await establishmentService.getEstablishmentByBarangay(req.query._id);
+        const establishment = await establishmentService.getEstablishmentByBarangay(req.query._id, req.query.status);
         res.json(establishment);
     } catch (error) {
         next(error);

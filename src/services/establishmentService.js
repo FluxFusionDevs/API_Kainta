@@ -91,8 +91,8 @@ exports.deleteEstablishment = async (id) => {
   return establishment;
 };
 
-exports.getEstablishmentByBarangay = async (barangay) => {
-  return await Establishment.find({ barangay: barangay, status: "APPROVED" });
+exports.getEstablishmentByBarangay = async (barangay, status) => {
+  return await Establishment.find({ barangay: barangay, status: status });
 };
 
 exports.uploadDocument = async ({ establishmentId, name, image }) => {
