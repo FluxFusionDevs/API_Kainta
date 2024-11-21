@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { generateActivationCode } = require('../utils/activation_code_generator');
-
+const logger = require('../utils/logger');
 const userSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
     }],
     trial: {
         type: Boolean,
-        default: true
+        default: false
     },
     premium: {
         type: Boolean,
@@ -85,6 +85,21 @@ const userSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true  // Adds createdAt and updatedAt
+});
+
+userSchema.pre('findOneAndUpdate', async function(next) {
+    const update = this.getUpdate();
+    if (update.$set?.trial === true && !update.$set?.trial_exp_date) {  // Check inside $set operator
+        this.setUpdate({
+            ...update,
+            $set: {
+                ...update.$set,
+                trial_exp_date: new Date(+new Date() + 7 * 24 * 60 * 60 * 1000),
+                type: 'OWNER'
+            }
+        });
+    }
+    next();
 });
 
 userSchema.pre('save', function(next) {
