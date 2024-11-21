@@ -65,3 +65,12 @@ exports.getAllPayments = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.updatePaymentStatus = async (req, res, next) => {
+  try {
+    const payment = await paymentService.updatePaymentStatus(req.body);
+    res.status(200).json(payment);
+  } catch (error) {
+    next(error);
+  }
+};

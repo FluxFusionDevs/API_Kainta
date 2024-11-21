@@ -22,3 +22,8 @@ exports.getAllPayments = async (status = null) => {
         }
       });
 };
+
+exports.updatePaymentStatus = async (paymentData) => {
+  return await Payment.findByIdAndUpdate(paymentData._id, { status: paymentData.status });
+};
+

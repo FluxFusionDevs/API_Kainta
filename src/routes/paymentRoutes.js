@@ -22,4 +22,7 @@ router.post(
 );
 
 router.get("/get-all-payments", paymentController.getAllPayments);
+
+router.put("/update-status", paymentController.updatePaymentStatus);
+
 module.exports = router;
