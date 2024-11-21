@@ -4,10 +4,14 @@ const paymentController = require("../controllers/paymentController");
 const { createUploadMiddleware } = require("../middleware/upload");
 
 const uploadDocument = createUploadMiddleware({
-  directory: "uploads/payment",
-  filePrefix: "payment",
-  fieldName: "paymentImage",
-  maxSize: 5 * 1024 * 1024, // 5MB
+  fields: [
+    {
+      directory: "uploads/payments",
+      filePrefix: "payment",
+      fieldName: "paymentImage",
+      maxSize: 5 * 1024 * 1024, // 5MB
+    },
+  ],
 });
 
 router.post("/subscribe-trial", paymentController.subscribeTrial);
