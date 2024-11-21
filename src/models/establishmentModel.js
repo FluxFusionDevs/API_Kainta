@@ -8,6 +8,7 @@ const documentSchema = require('./documentModel');
 const establishmentSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
+        auto: true
     },
     name: {
         type: String,
@@ -19,9 +20,9 @@ const establishmentSchema = new mongoose.Schema({
         required: true,
         index: '2dsphere'  // Move index here
     },
-    images: [{
-        type: String
-    }],
+    image: {
+        type: String,
+    },
     menu_items: [foodSchema],
     contact_number: {
         type: String,
