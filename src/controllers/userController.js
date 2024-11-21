@@ -1,6 +1,6 @@
 const userService = require("../services/userService");
 const logger = require("../utils/logger");
-const { uploadSingleImage } = require("./uploadController");
+
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await userService.getUsers();
@@ -35,7 +35,7 @@ exports.updateUserAvatar = async (req, res, next) => {
     try {
       const userId = req.body._id;
       // Update user with new avatar URL
-      const user = await userService.updateUserAvatar(userId, req.uploadedFile.path);
+      const user = await userService.updateUserAvatar(userId, req.uploadedFile.profileImage.path);
       res.json(user);
     } catch (error) {
       logger.error("Error in updateUserAvatar controller:", error);

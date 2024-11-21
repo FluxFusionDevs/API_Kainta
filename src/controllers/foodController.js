@@ -16,7 +16,7 @@ exports.addFoodItem = async (req, res, next) => {
         price,
         tags,
         description,
-        image: req.uploadedFile?.path || null
+        image: req.uploadedFile.foodImage.path
       };
       
 
