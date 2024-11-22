@@ -99,6 +99,16 @@ userSchema.pre('findOneAndUpdate', async function(next) {
             }
         });
     }
+
+    if (update.$set?.premium === true && !update.$set?.premium_exp_date) {  // Check inside $set operator
+        this.setUpdate({
+            ...update,
+            $set: {
+                ...update.$set,
+                premium_exp_date: new Date(+new Date() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+            }
+        });
+    }
     next();
 });
 
