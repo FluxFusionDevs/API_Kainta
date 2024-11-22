@@ -58,6 +58,11 @@ const paymentSchema = new mongoose.Schema({
     timestamps: true
 });
 
+paymentSchema.pre(['updateOne', 'findOneAndUpdate'], function(next) {
+  this.setOptions({ runValidators: true });
+  next();
+});
+
 // Pre-save middleware to handle TRIAL type payments
 paymentSchema.pre('save', function(next) {
     if (this.type === PAYMENT_TYPE.TRIAL) {
