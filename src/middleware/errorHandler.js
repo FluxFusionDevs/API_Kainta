@@ -1,11 +1,27 @@
 const logger = require('../utils/logger');
-
+ 
 module.exports = (err, req, res, next) => {
+    // Always log the error server-side
     logger.error(err.stack);
 
-    res.status(err.status || 500).json({
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const statusCode = err.status || 500;
+    
+    // Only show detailed message in development or for non-500 errors
+    const message = statusCode === 500 && !isDevelopment 
+        ? 'Internal server error'
+        : err.message;
+
+    // Response object
+    const errorResponse = {
         status: 'error',
-        message: err.message || 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    });
+        message
+    };
+
+    // Only add stack trace in development
+    if (isDevelopment) {
+        errorResponse.stack = err.stack;
+    }
+
+    res.status(statusCode).json(errorResponse);
 };
