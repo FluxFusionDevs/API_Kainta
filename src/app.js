@@ -14,7 +14,9 @@ const bodyParser = require('body-parser');
 connectDB();
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: false //disable cross origin resource policy
+}));
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
