@@ -54,6 +54,8 @@ exports.findGoogleUser = async (id) => {
     return await User.findOne({ googleId: id });
 };
 
+
+
 exports.findAppleUser = async (id) => {
     return await User.findOne({ appleId: id });
 };
@@ -84,7 +86,8 @@ exports.registerWithEmailAndPassword = async ({ name, type, email_type , email, 
 };
 
 
-exports.updateUserSubscription = async (userId) => {
-    return await User.findByIdAndUpdate(userId, { $set: { trial: true } }, { new: true });
+exports.updateUserSubscription = async (userId, type) => {
+    const lowerCaseType = type.toLowerCase();
+    return await User.findByIdAndUpdate(userId, { $set: { [lowerCaseType]: true } }, { new: true });
 };
 
