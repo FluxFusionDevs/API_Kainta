@@ -50,11 +50,11 @@ exports.deleteFoodItem = async (req, res, next) => {
 
 exports.updateFoodItem = async (req, res, next) => {
   try {
-    const { establishmentId, foodItemId, foodItem } = req.body;
+    const { establishmentId, foodItemId, name, tags, price, description } = req.body;
     const establishment = await foodService.updateFoodItem(
       establishmentId,
       foodItemId,
-      foodItem
+      { name, tags, price, description, image: req.uploadedFile.foodImage.path }
     );
     res.json(establishment);
   } catch (error) {
