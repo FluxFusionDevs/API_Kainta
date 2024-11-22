@@ -62,11 +62,11 @@ exports.findAppleUser = async (id) => {
 
 
 exports.addFavoriteEstablishment = async ({ userId, establishmentId }) => {
-    return await User.findByIdAndUpdate(userId, { $addToSet: { favoriteEstablishments: establishmentId } }, { new: true });
+    return await User.findByIdAndUpdate(userId, { $addToSet: { favorite_establishments: establishmentId } }, { new: true });
 };
 
 exports.removeFavoriteEstablishment = async ({ userId, establishmentId }) => {
-    return await User.findByIdAndUpdate(userId, { $pull: { favoriteEstablishments: establishmentId } }, { new: true });
+    return await User.findByIdAndUpdate(userId, { $pull: { favorite_establishments: establishmentId } }, { new: true });
 };
 
 exports.loginWithEmailAndPassword = async ({ email, password }) => {
