@@ -69,6 +69,9 @@ exports.getAllPayments = async (req, res, next) => {
 exports.updatePaymentStatus = async (req, res, next) => {
   try {
     const payment = await paymentService.updatePaymentStatus(req.body);
+    if (!payment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
     if (payment.type === PAYMENT_TYPE.PREMIUM && payment.status === PAYMENT_STATUS.COMPLETED) {
         console.log(`Updating user ${payment.user} with ${payment.type} subscription`);
         await userService.updateUserSubscription(payment.user, payment.type);
