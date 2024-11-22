@@ -5,6 +5,14 @@ const foodSchema = require('./foodModel');
 const logger = require('../utils/logger');
 const User = require('./userModel');
 const documentSchema = require('./documentModel');
+
+const ESTABLISHMENT_STATUS = {
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED'
+};
+
+
 const establishmentSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -55,8 +63,8 @@ const establishmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['PENDING', 'APPROVED', 'REJECTED'],
-        default: 'PENDING'
+        enum: Object.values(ESTABLISHMENT_STATUS),
+        default: ESTABLISHMENT_STATUS.PENDING
     },
     documents: {
         type: [documentSchema],
@@ -65,6 +73,11 @@ const establishmentSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
+});
+
+establishmentSchema.pre(['updateOne', 'findOneAndUpdate'], function(next) {
+    this.setOptions({ runValidators: true });
+    next();
 });
 
 // Pre-save middleware to verify owner status
