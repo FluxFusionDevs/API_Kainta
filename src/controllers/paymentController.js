@@ -2,7 +2,7 @@ const paymentService = require("../services/paymentService");
 const logger = require("../utils/logger");
 const { PAYMENT_TYPE } = require("../models/paymentModel");
 const  userService  = require("../services/userService");
-
+const { PAYMENT_STATUS } = require("../models/paymentModel");
 exports.subscribeTrial = async (req, res, next) => {
   try {
     // Add TRIAL type to payment data
@@ -14,7 +14,7 @@ exports.subscribeTrial = async (req, res, next) => {
       });
     }
     const payment = await paymentService.createPayment(paymentData);
-    const user = await userService.updateUserSubscription(paymentData.user);
+    const user = await userService.updateUserSubscription(paymentData.user, payment.type);
 
     res.status(201).json({payment, user});
   } catch (error) {
@@ -69,6 +69,10 @@ exports.getAllPayments = async (req, res, next) => {
 exports.updatePaymentStatus = async (req, res, next) => {
   try {
     const payment = await paymentService.updatePaymentStatus(req.body);
+    if (payment.type === PAYMENT_TYPE.PREMIUM && payment.status === PAYMENT_STATUS.COMPLETED) {
+        console.log(`Updating user ${payment.user} with ${payment.type} subscription`);
+        await userService.updateUserSubscription(payment.user, payment.type);
+    }
     res.status(200).json(payment);
   } catch (error) {
     next(error);
