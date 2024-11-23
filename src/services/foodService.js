@@ -88,6 +88,7 @@ exports.updateFoodItem = async (establishmentId, foodItemId, foodItem) => {
                 'menu_items.$.price': updateData.price,
                 'menu_items.$.description': updateData.description,
                 'menu_items.$.category': updateData.category,
+                'menu_items.$.image': updateData.image,
                 // Add other fields as needed
             }
         },
