@@ -51,10 +51,19 @@ exports.deleteFoodItem = async (req, res, next) => {
 exports.updateFoodItem = async (req, res, next) => {
   try {
     const { establishmentId, foodItemId, name, tags, price, description } = req.body;
+    
+    // Create update object without image property by default
+    const updateData = { name, tags, price, description };
+    
+    // Add image property only if file was uploaded
+    if (req.uploadedFile?.foodImage?.path) {
+      updateData.image = req.uploadedFile.foodImage.path;
+    }
+
     const establishment = await foodService.updateFoodItem(
       establishmentId,
       foodItemId,
-      { name, tags, price, description, image: req.uploadedFile.foodImage.path }
+      updateData
     );
     res.json(establishment);
   } catch (error) {
