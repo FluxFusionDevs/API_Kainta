@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
+const logger = require("../utils/logger");
 
 // Helper function to ensure directory exists
 const ensureDirectoryExists = (dirPath) => {
@@ -25,6 +26,7 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
       "image/webp": ".webp",
       "image/svg+xml": ".svg",
     };
+    console.log('MIME:', mimeType);
     return mimeToExt[mimeType] || ".jpg";
   };
 
@@ -52,9 +54,18 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
   }));
 
   return (req, res, next) => {
+    // console.log(req.form);
+    // console.log('Request headers:', req.headers);
+    // console.log('Content-Type:', req.headers['content-type']);
+    // console.log("Received files:", req.files);
+    // console.log("Received body:", req.body);
     req.uploadedFile = req.uploadedFile || {};
-
+    const timeout = setTimeout(() => {
+      next(new Error("Request upload timed out"));
+    }, 10000); // 10 seconds timeout
     upload.fields(multerFields)(req, res, async (err) => {
+      clearTimeout(timeout);
+
       if (err) {
         return next(
           err instanceof multer.MulterError
@@ -65,6 +76,8 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
 
       try {
         // Process each field
+        // console.log("Processing fields:", fields);
+        // console.log("Request files:", req.files);
         for (const field of fields) {
           const fieldFiles = req.files?.[field.fieldName];
           if (!fieldFiles || !fieldFiles[0]) {

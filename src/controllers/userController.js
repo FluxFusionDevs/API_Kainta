@@ -34,6 +34,12 @@ exports.getUserById = async (req, res, next) => {
 exports.updateUserAvatar = async (req, res, next) => {
     try {
       const userId = req.body._id;
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+      if (!req.uploadedFile?.profileImage?.path) {
+        return res.status(400).json({ message: 'Profile image is required' });
+      }
       // Update user with new avatar URL
       const user = await userService.updateUserAvatar(userId, req.uploadedFile.profileImage.path);
       res.json(user);
