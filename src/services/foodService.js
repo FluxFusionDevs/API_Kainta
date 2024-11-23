@@ -65,7 +65,6 @@ exports.getFoodItem = async (establishmentId, foodItemId) => {
 
     return establishment;
 }
-
 exports.updateFoodItem = async (establishmentId, foodItemId, foodItem) => {
     if (!mongoose.Types.ObjectId.isValid(establishmentId)) {
         throw new Error('Invalid establishment ID');
@@ -74,6 +73,9 @@ exports.updateFoodItem = async (establishmentId, foodItemId, foodItem) => {
     if (!mongoose.Types.ObjectId.isValid(foodItemId)) {
         throw new Error('Invalid food item ID');
     }
+    
+    // Remove _id from foodItem if it exists to prevent ID changes
+    const { _id, ...updateData } = foodItem;
 
     const establishment = await Establishment.findOneAndUpdate(
         {
@@ -82,7 +84,11 @@ exports.updateFoodItem = async (establishmentId, foodItemId, foodItem) => {
         },
         {
             $set: {
-                'menu_items.$': foodItem
+                'menu_items.$.name': updateData.name,
+                'menu_items.$.price': updateData.price,
+                'menu_items.$.description': updateData.description,
+                'menu_items.$.category': updateData.category,
+                // Add other fields as needed
             }
         },
         {
