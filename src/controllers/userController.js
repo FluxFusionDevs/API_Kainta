@@ -87,3 +87,13 @@ exports.updateUserAvatar = async (req, res, next) => {
       next(error);
     }
   }
+
+  exports.loginWithGoogle = async (req, res, next) => {
+    try {
+      console.log(req.user);
+      const token = await userService.loginWithGoogle(req.user);
+      res.json(token);
+    } catch (error) {
+      next(error);
+    }
+  }

@@ -94,3 +94,31 @@ exports.updateUserSubscription = async (userId, type) => {
     return await User.findByIdAndUpdate(userId, { $set: { [lowerCaseType]: true } }, { new: true });
 };
 
+
+
+exports.loginWithGoogle = async (profile) => {
+    const { id, emails } = profile;
+    const email = emails[0].value; // Get the primary email
+
+    try {
+        // Check if the user already exists
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // If the user doesn't exist, create a new user
+            user = new User({
+                googleId: id,
+                email,
+                email_type: 'GOOGLE',
+                // Add other fields as necessary
+            });
+            await user.save();
+        }
+
+        // Return the user
+        const token = jwt.sign({ sub: user._id, user: user }, process.env.JWT_SECRET, { expiresIn: '12h' });
+        return token;
+    } catch (error) {
+        throw new Error('Error logging in with Google: ' + error.message);
+    }
+};
