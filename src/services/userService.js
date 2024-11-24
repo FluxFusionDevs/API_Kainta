@@ -97,8 +97,7 @@ exports.updateUserSubscription = async (userId, type) => {
 
 
 exports.loginWithGoogle = async (profile) => {
-    const { id, emails } = profile;
-    const email = emails[0].value; // Get the primary email
+    const { name, email, avatar } = profile;
 
     try {
         // Check if the user already exists
@@ -109,6 +108,7 @@ exports.loginWithGoogle = async (profile) => {
             user = new User({
                 googleId: id,
                 email,
+                name,
                 email_type: 'GOOGLE',
                 // Add other fields as necessary
             });
