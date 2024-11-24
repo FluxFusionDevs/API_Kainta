@@ -90,8 +90,7 @@ exports.updateUserAvatar = async (req, res, next) => {
 
   exports.loginWithGoogle = async (req, res, next) => {
     try {
-      console.log(req.user);
-      const token = await userService.loginWithGoogle(req.user);
+      const token = await userService.loginWithGoogle(req.body);
       res.json(token);
     } catch (error) {
       next(error);

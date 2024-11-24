@@ -97,8 +97,7 @@ exports.updateUserSubscription = async (userId, type) => {
 
 
 exports.loginWithGoogle = async (profile) => {
-    const { name, email, avatar } = profile;
-
+    const { name, email, avatar, googleId } = profile;
     try {
         // Check if the user already exists
         let user = await User.findOne({ email });
@@ -106,10 +105,11 @@ exports.loginWithGoogle = async (profile) => {
         if (!user) {
             // If the user doesn't exist, create a new user
             user = new User({
-                googleId: id,
+                googleId: googleId,
                 email,
                 name,
                 email_type: 'GOOGLE',
+                avatar,
                 // Add other fields as necessary
             });
             await user.save();
