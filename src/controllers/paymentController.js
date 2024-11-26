@@ -19,6 +19,12 @@ exports.subscribeTrial = async (req, res, next) => {
     res.status(201).json({payment, user});
   } catch (error) {
     logger.error("Error creating trial subscription:", error);
+    if (error.message === 'ALREADY HAS TRIAL') {
+      return res.status(400).json({ message: "User already has a trial subscription" });
+    }
+    else if (error.message === 'ALREADY HAS PREMIUM') {
+      return res.status(400).json({ message: "User already has a premium subscription" });
+    }
     next(error);
   }
 };
