@@ -6,12 +6,12 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
-passport.deserializeUser(async (user, done) => {
+passport.deserializeUser(async (userr, done) => {
   try {
-    const user = await userService.getUserById(user.id);
+    const user = await userService.getUserById(userr._id);
     done(null, user);
   } catch (error) {
     done(error, null);
@@ -32,24 +32,24 @@ passport.use(new JwtStrategy(jwtOptions, async (payload, done) => {
   }
 }));
 
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.GOOGLE_CLIENT_ID,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//       callbackURL: "http://localhost:3000/auth/google/callback",
-//       passReqToCallback: true,
-//     },
-//     async (request, accessToken, refreshToken, profile, done) => {
-//       try {
-//         let user = await userService.findGoogleUser(profile.id);
-//         done(null, user);
-//       } catch (error) {
-//         done(error, null);
-//       }
-//     }
-//   )
-// );
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      passReqToCallback: true,
+    },
+    async (request, accessToken, refreshToken, profile, done) => {
+      try {
+        const user = await userService.findGoogleUser(profile.id);
+        done(null, user);
+      } catch (error) {
+        done(error, null);
+      }
+    }
+  )
+);
 
 // passport.use(new AppleStrategy({
 //   clientID: process.env.APPLE_CLIENT_ID, // Your Services ID

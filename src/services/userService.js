@@ -51,7 +51,11 @@ exports.findOrCreateUser = async (profile) => {
 }
 
 exports.findGoogleUser = async (id) => {
-    return await User.findOne({ googleId: id });
+    const user = await User.findOne({ googleId: id });
+    if (!user) {
+        throw new Error('User not found');
+    }
+    return user;
 };
 
 
