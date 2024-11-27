@@ -10,6 +10,7 @@ const app = express();
 const session = require('express-session');
 const path = require('path');
 const bodyParser = require('body-parser');
+const auth = require('./middleware/auth');
 //Database connection
 connectDB();
 
@@ -29,7 +30,7 @@ app.use(session({
 }));
 
 // Routes
-app.use('/api', routes);
+app.use('/api', auth ,routes);
 app.use('/auth', authRoutes);
 app.use('/uploads', express.static('uploads'));
 
