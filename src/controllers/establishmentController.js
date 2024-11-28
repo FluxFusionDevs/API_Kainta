@@ -103,3 +103,11 @@ exports.searchEstablishments = async (req, res, next) => {
     }
 }
 
+exports.incrementViews = async (req, res, next) => {
+    try {
+        const updatedEstablishment = await establishmentService.incrementViews(req.body);
+        res.json(updatedEstablishment);
+    } catch (error) {
+        next(error);
+    }
+}

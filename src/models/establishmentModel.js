@@ -56,6 +56,10 @@ const establishmentSchema = new mongoose.Schema({
         type: ratingSchema,
         default: []
     }],
+    views: {
+        type: Number,
+        default: 0
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

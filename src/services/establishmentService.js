@@ -115,7 +115,6 @@ exports.uploadDocument = async ({ establishmentId, name, image }) => {
   return await establishment.save();
 };
 
-
 /**
  * Search for establishments by name, food name, or food tags.
  * @param {string} query - The search query.
@@ -123,23 +122,34 @@ exports.uploadDocument = async ({ establishmentId, name, image }) => {
  */
 exports.searchEstablishments = async (query) => {
   try {
-    const regex = new RegExp(query, 'i'); // Case-insensitive regex for partial matching
+    const regex = new RegExp(query, "i"); // Case-insensitive regex for partial matching
 
     const establishments = await Establishment.find({
       $or: [
         { name: regex },
-        { 'menu_items.name': regex },
-        { 'menu_items.tags': regex }
-      ]
+        { "menu_items.name": regex },
+        { "menu_items.tags": regex },
+      ],
     });
 
     return establishments;
   } catch (error) {
-    console.error('Error searching for establishments:', error);
+    console.error("Error searching for establishments:", error);
     throw error;
   }
 };
 
+exports.incrementViews = async ({ _id }) => {
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    throw new Error("Invalid establishment ID");
+  }
+
+  return await Establishment.findByIdAndUpdate(
+    _id,
+    { $inc: { views: 1 } },
+    { new: true }
+  );
+};
 
 // Additional useful methods
 
