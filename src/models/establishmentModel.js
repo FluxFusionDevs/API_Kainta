@@ -12,6 +12,17 @@ const ESTABLISHMENT_STATUS = {
     REJECTED: 'REJECTED'
 };
 
+const viewsSchema = {
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+  };
 
 const establishmentSchema = new mongoose.Schema({
     _id: {
@@ -56,10 +67,7 @@ const establishmentSchema = new mongoose.Schema({
         type: ratingSchema,
         default: []
     }],
-    views: {
-        type: Number,
-        default: 0
-    },
+    views: [viewsSchema],
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -87,6 +95,12 @@ establishmentSchema.pre(['updateOne', 'findOneAndUpdate'], function(next) {
 // Pre-save middleware to verify owner status
 establishmentSchema.pre('save', async function(next) {
     try {
+        
+        // Check if only the views field is being modified
+            if (this.isModified('views')) {
+                return next();
+        }
+
         const owner = await User.findById(this.owner);
         
         if (!owner) {

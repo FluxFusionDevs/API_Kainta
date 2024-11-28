@@ -139,16 +139,30 @@ exports.searchEstablishments = async (query) => {
   }
 };
 
-exports.incrementViews = async ({ _id }) => {
-  if (!mongoose.Types.ObjectId.isValid(_id)) {
-    throw new Error("Invalid establishment ID");
-  }
+exports.incrementViews = async ({ establishmentId, userId }) => {
+  try {
+    const establishment = await Establishment.findById(establishmentId, 'views').exec();
 
-  return await Establishment.findByIdAndUpdate(
-    _id,
-    { $inc: { views: 1 } },
-    { new: true }
-  );
+    if (!establishment) {
+      throw new Error('Establishment not found');
+    }
+
+    console.log(establishment);
+
+    // Add the new view entry to the views array
+    establishment.views.push({
+      userId: userId,
+      date: new Date()
+    });
+
+    // Save the updated establishment
+    await establishment.save();
+
+    return establishment;
+  } catch (error) {
+    console.error('Error incrementing views:', error);
+    throw error;
+  }
 };
 
 // Additional useful methods
