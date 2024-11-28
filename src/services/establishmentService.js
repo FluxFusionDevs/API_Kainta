@@ -36,7 +36,12 @@ exports.getEstablishmentById = async (id) => {
   return establishment;
 };
 
-exports.createEstablishment = async (documentName, documentImage, establishmentImage, establishmentData) => {
+exports.createEstablishment = async (
+  documentName,
+  documentImage,
+  establishmentImage,
+  establishmentData
+) => {
   // Ensure _id is set for the new establishment
   const establishment = new Establishment(establishmentData);
   // Validate required fields
@@ -49,12 +54,12 @@ exports.createEstablishment = async (documentName, documentImage, establishmentI
     throw new Error("Operating hours are required");
   if (!establishment.barangay) throw new Error("Barangay is required");
   if (!establishment.owner) throw new Error("Owner is required");
- 
+
   establishment.image = establishmentImage;
 
   establishment.documents.push({
     name: documentName,
-    image: documentImage
+    image: documentImage,
   });
 
   return await establishment.save();
@@ -109,6 +114,32 @@ exports.uploadDocument = async ({ establishmentId, name, image }) => {
   establishment.documents.push(newDocument);
   return await establishment.save();
 };
+
+
+/**
+ * Search for establishments by name, food name, or food tags.
+ * @param {string} query - The search query.
+ * @returns {Promise<Array>} - A promise that resolves to an array of establishments.
+ */
+exports.searchEstablishments = async (query) => {
+  try {
+    const regex = new RegExp(query, 'i'); // Case-insensitive regex for partial matching
+
+    const establishments = await Establishment.find({
+      $or: [
+        { name: regex },
+        { 'menu_items.name': regex },
+        { 'menu_items.tags': regex }
+      ]
+    });
+
+    return establishments;
+  } catch (error) {
+    console.error('Error searching for establishments:', error);
+    throw error;
+  }
+};
+
 
 // Additional useful methods
 

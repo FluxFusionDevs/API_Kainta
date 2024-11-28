@@ -40,5 +40,7 @@ router.get(
   "/get-establishment-by-barangay",
   establishmentController.getEstablishmentByBarangay
 );
+
+router.get("/search-establishments", establishmentController.searchEstablishments);
 // router.post("/upload-document", uploadDocument, establishmentController.uploadDocument);
 module.exports = router;

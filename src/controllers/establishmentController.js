@@ -94,3 +94,12 @@ exports.uploadDocument = async (req, res, next) => {
     }
 }
 
+exports.searchEstablishments = async (req, res, next) => {
+    try {
+        const establishments = await establishmentService.searchEstablishments(req.query.query);
+        res.json(establishments);
+    } catch (error) {
+        next(error);
+    }
+}
+
