@@ -110,4 +110,17 @@ exports.incrementViews = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+    
+}
+
+exports.updateImage = async (req, res, next) => {
+    try {
+        if (req.uploadedFile?.establishmentImage?.path) {
+            req.body.establishmentImage = req.uploadedFile.establishmentImage.path;
+        }
+        const establishment = await establishmentService.updateImage(req.body);
+        res.json(establishment);
+    } catch (error) {
+        next(error);
+    }
 }

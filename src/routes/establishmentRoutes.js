@@ -20,6 +20,17 @@ const uploadFiles = createUploadMiddleware({
   ],
 });
 
+const uploadEstablishmentImage = createUploadMiddleware({
+  fields: [
+    {
+      directory: "uploads/establishments",
+      filePrefix: "establishment",
+      fieldName: "establishmentImage",
+      maxSize: 5 * 1024 * 1024, // 5MB
+    },
+  ],
+});
+
 router.get("/get-establishments", establishmentController.getEstablishments);
 router.get("/get-establishment", establishmentController.getEstablishmentById);
 router.post(
@@ -29,6 +40,7 @@ router.post(
 );
 router.put(
   "/update-establishment",
+  uploadEstablishmentImage,
   establishmentController.updateEstablishment
 );
 router.delete(
@@ -45,6 +57,8 @@ router.get(
   "/search-establishments",
   establishmentController.searchEstablishments
 );
+
+router.put('update-image', uploadEstablishmentImage, establishmentController.updateImage);
 
 router.post("/increment-views", establishmentController.incrementViews);
 // router.post("/upload-document", uploadDocument, establishmentController.uploadDocument);

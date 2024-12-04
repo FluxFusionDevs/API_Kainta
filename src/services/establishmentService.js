@@ -141,10 +141,13 @@ exports.searchEstablishments = async (query) => {
 
 exports.incrementViews = async ({ establishmentId, userId }) => {
   try {
-    const establishment = await Establishment.findById(establishmentId, 'views').exec();
+    const establishment = await Establishment.findById(
+      establishmentId,
+      "views"
+    ).exec();
 
     if (!establishment) {
-      throw new Error('Establishment not found');
+      throw new Error("Establishment not found");
     }
 
     console.log(establishment);
@@ -152,7 +155,7 @@ exports.incrementViews = async ({ establishmentId, userId }) => {
     // Add the new view entry to the views array
     establishment.views.push({
       userId: userId,
-      date: new Date()
+      date: new Date(),
     });
 
     // Save the updated establishment
@@ -160,9 +163,21 @@ exports.incrementViews = async ({ establishmentId, userId }) => {
 
     return establishment;
   } catch (error) {
-    console.error('Error incrementing views:', error);
+    console.error("Error incrementing views:", error);
     throw error;
   }
+};
+
+exports.updateImage = async ({ _id, establishmentImage }) => {
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    throw new Error("Invalid establishment ID");
+  }
+
+  return await Establishment.findByIdAndUpdate(
+    _id,
+    { $set: { image: establishmentImage } },
+    { new: true }
+  );
 };
 
 // Additional useful methods
