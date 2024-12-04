@@ -98,8 +98,8 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
           const filePath = path.join(uploadDir, filename);
 
           // Save file
-          await fs.promises.writeFile(filePath, file.buffer);
-
+          await fs.promises.writeFile(filePath, file.buffer, { flag: 'w' });
+          
           // Store file info
           req.uploadedFile[field.fieldName] = {
             filename,
