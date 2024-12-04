@@ -58,7 +58,7 @@ router.get(
   establishmentController.searchEstablishments
 );
 
-router.put('update-image', uploadEstablishmentImage, establishmentController.updateImage);
+router.put('/update-image', uploadEstablishmentImage, establishmentController.updateImage);
 
 router.post("/increment-views", establishmentController.incrementViews);
 // router.post("/upload-document", uploadDocument, establishmentController.uploadDocument);
