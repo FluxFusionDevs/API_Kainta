@@ -39,14 +39,16 @@ exports.createEstablishment = async (req, res, next) => {
 };
 
 exports.updateEstablishment = async (req, res, next) => {
-    try {
-        req.body.images = req.uploadedFile.establishmentImage.map(file => file.path);
-        const updatedEstablishment = await establishmentService.updateEstablishment(req.body);
-        res.json(updatedEstablishment);
-    } catch (error) {
-        next(error);
+  try {
+    if (req.uploadedFile && req.uploadedFile.establishmentImage && req.uploadedFile.establishmentImage.length > 0) {
+      req.body.images = req.uploadedFile.establishmentImage.map(file => file.path);
     }
-}
+    const updatedEstablishment = await establishmentService.updateEstablishment(req.body);
+    res.json(updatedEstablishment);
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.deleteEstablishment = async (req, res, next) => {
     try {
