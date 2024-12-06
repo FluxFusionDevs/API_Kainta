@@ -16,7 +16,7 @@ exports.addFoodItem = async (req, res, next) => {
         price,
         tags,
         description,
-        image: req.uploadedFile.foodImage.path
+        image:  req.uploadedFile.foodImage[0].path
       };
       
 
@@ -56,8 +56,8 @@ exports.updateFoodItem = async (req, res, next) => {
     const updateData = { name, tags, price, description };
     
     // Add image property only if file was uploaded
-    if (req.uploadedFile?.foodImage?.path) {
-      updateData.image = req.uploadedFile.foodImage.path;
+    if (req.uploadedFile?.foodImage && req.uploadedFile?.foodImage.length > 0) {
+      updateData.image = req.uploadedFile.foodImage[0].path;
     }
 
     const establishment = await foodService.updateFoodItem(

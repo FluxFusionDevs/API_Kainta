@@ -37,11 +37,11 @@ exports.updateUserAvatar = async (req, res, next) => {
       if (!userId) {
         return res.status(400).json({ message: 'User ID is required' });
       }
-      if (!req.uploadedFile?.profileImage?.path) {
+      if (req.uploadedFile?.profileImage?.length == 0) {
         return res.status(400).json({ message: 'Profile image is required' });
       }
       // Update user with new avatar URL
-      const user = await userService.updateUserAvatar(userId, req.uploadedFile.profileImage.path);
+      const user = await userService.updateUserAvatar(userId, req.uploadedFile.profileImage[0].path);
       res.json(user);
     } catch (error) {
       logger.error("Error in updateUserAvatar controller:", error);
