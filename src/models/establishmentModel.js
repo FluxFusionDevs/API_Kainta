@@ -39,8 +39,12 @@ const establishmentSchema = new mongoose.Schema({
         required: true,
         index: '2dsphere'  // Move index here
     },
-    image: {
+    address: {
         type: String,
+        required: true
+    },
+    images: {
+        type: [String],
     },
     menu_items: [foodSchema],
     contact_number: {
