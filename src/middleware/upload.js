@@ -26,7 +26,7 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
       "image/webp": ".webp",
       "image/svg+xml": ".svg",
     };
-    console.log('MIME:', mimeType);
+    console.log("MIME:", mimeType);
     return mimeToExt[mimeType] || ".jpg";
   };
 
@@ -38,7 +38,9 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
   };
 
   // Use memory storage instead of disk storage
-  const maxFileSize = Math.max(...fields.map(field => field.maxSize || 5 * 1024 * 1024));
+  const maxFileSize = Math.max(
+    ...fields.map((field) => field.maxSize || 5 * 1024 * 1024)
+  );
 
   const upload = multer({
     storage: multer.memoryStorage(),
@@ -50,7 +52,7 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
 
   const multerFields = fields.map((field) => ({
     name: field.fieldName,
-    maxCount: 1,
+    maxCount: 10,
   }));
 
   return (req, res, next) => {
@@ -65,6 +67,7 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
     }, 10000); // 10 seconds timeout
     upload.fields(multerFields)(req, res, async (err) => {
       clearTimeout(timeout);
+        console.log("Received files:", req.files);
 
       if (err) {
         return next(
@@ -76,15 +79,12 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
 
       try {
         // Process each field
-        // console.log("Processing fields:", fields);
-        // console.log("Request files:", req.files);
         for (const field of fields) {
           const fieldFiles = req.files?.[field.fieldName];
           if (!fieldFiles || !fieldFiles[0]) {
             continue; // Skip if no file for this field
           }
 
-          const file = fieldFiles[0];
           const id = req.body._id ?? uuidv4();
           if (!id) {
             return next(new Error("id is required"));
@@ -93,21 +93,26 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
           const uploadDir = path.join(__dirname, "../../", field.directory);
           ensureDirectoryExists(uploadDir);
 
-          const extension = getExtensionFromMimeType(file.mimetype);
-          const filename = `${id}${extension}`;
-          const filePath = path.join(uploadDir, filename);
+          req.uploadedFile[field.fieldName] = [];
 
-          // Save file
-          await fs.promises.writeFile(filePath, file.buffer, { flag: 'w' });
-          
-          // Store file info
-          req.uploadedFile[field.fieldName] = {
-            filename,
-            path: `/${field.directory}/${filename}`,
-            originalname: file.originalname,
-            mimetype: file.mimetype,
-            size: file.size,
-          };
+          for (const file of fieldFiles) {
+            const id2 = uuidv4();
+            const extension = getExtensionFromMimeType(file.mimetype);
+            const filename = `${id}-${id2}${extension}`;
+            const filePath = path.join(uploadDir, filename);
+
+            // Save file
+            await fs.promises.writeFile(filePath, file.buffer, { flag: "w" });
+
+            // Store file info
+            req.uploadedFile[field.fieldName].push({
+              filename,
+              path: `/${field.directory}/${filename}`,
+              originalname: file.originalname,
+              mimetype: file.mimetype,
+              size: file.size,
+            });
+          }
         }
 
         next();
