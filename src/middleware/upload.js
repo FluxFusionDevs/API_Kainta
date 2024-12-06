@@ -67,7 +67,6 @@ exports.createUploadMiddleware = ({ fields = [] } = {}) => {
     }, 10000); // 10 seconds timeout
     upload.fields(multerFields)(req, res, async (err) => {
       clearTimeout(timeout);
-        console.log("Received files:", req.files);
 
       if (err) {
         return next(
