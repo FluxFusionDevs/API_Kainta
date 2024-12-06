@@ -26,7 +26,7 @@ const uploadEstablishmentImage = createUploadMiddleware({
       directory: "uploads/establishments",
       filePrefix: "establishment",
       fieldName: "establishmentImage",
-      maxSize: 5 * 1024 * 1024, // 5MB
+      maxSize: 25 * 1024 * 1024, // 25MB
     },
   ],
 });

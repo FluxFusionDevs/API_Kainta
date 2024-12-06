@@ -55,7 +55,7 @@ exports.createEstablishment = async (
   if (!establishment.barangay) throw new Error("Barangay is required");
   if (!establishment.owner) throw new Error("Owner is required");
 
-  establishment.image = establishmentImage;
+  establishment.images = establishmentImage;
 
   establishment.documents.push({
     name: documentName,

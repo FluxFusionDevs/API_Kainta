@@ -25,10 +25,9 @@ exports.createEstablishment = async (req, res, next) => {
         // Parse the cleaned JSON string
         const jsonBody = cleanAndParseJson(req.body.jsonData);
         console.log(req.uploadedFile);
-        const documentImage = req.uploadedFile.documentImage.path;
+        const documentImage = req.uploadedFile.documentImage[0].path;
         const documentName = req.body.documentName
-        const establishmentImage = req.uploadedFile.establishmentImage.path;
-
+        const establishmentImage = req.uploadedFile.establishmentImage.map(file => file.path);
         const establishment = await establishmentService.createEstablishment(documentName, documentImage, establishmentImage, jsonBody);
         res.status(201).json(establishment);
     } catch (error) {
@@ -39,6 +38,7 @@ exports.createEstablishment = async (req, res, next) => {
 
 exports.updateEstablishment = async (req, res, next) => {
     try {
+        req.body.images = req.uploadedFile.establishmentImage.map(file => file.path);
         const updatedEstablishment = await establishmentService.updateEstablishment(req.body);
         res.json(updatedEstablishment);
     } catch (error) {
