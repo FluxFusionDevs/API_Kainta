@@ -31,7 +31,7 @@ exports.createBarangays = async (req, res) => {
 exports.uploadBarangayImage = async (req, res) => {
     try {
         const barangayId = req.body._id;
-        const imageUrl = req.uploadedFile.barangayImage.path
+        const imageUrl = req.uploadedFile.barangayImage[0].path;
         const barangay = await barangayService.uploadBarangayImage(barangayId, imageUrl);
         res.json(barangay);
     } catch (error) {
