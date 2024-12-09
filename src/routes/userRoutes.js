@@ -5,12 +5,10 @@ const { createUploadMiddleware } = require("../middleware/upload");
 
 const router = express.Router();
 
-const renderPath = process.env.RENDER_UPLOAD_PATH;
-const renderUploadPath = process.env.NODE_ENV === "development" ? `${renderPath}/uploads/profilePics` : "uploads/profilePics";
 const uploadAvatar = createUploadMiddleware({
   fields: [
     {
-      directory: renderUploadPath,
+      directory: "uploads/profilePics",
       fieldName: "profileImage",
       maxSize: 5 * 1024 * 1024, // 5MB
     },
