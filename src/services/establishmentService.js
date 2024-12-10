@@ -116,7 +116,7 @@ exports.uploadDocument = async ({ establishmentId, name, image }) => {
 };
 
 /**
- * Search for establishments by name, food name, or food tags.
+ * Search for establishments by name, food name, food tags, or quisines.
  * @param {string} query - The search query.
  * @returns {Promise<Array>} - A promise that resolves to an array of establishments.
  */
@@ -129,6 +129,7 @@ exports.searchEstablishments = async (query) => {
         { name: regex },
         { "menu_items.name": regex },
         { "menu_items.tags": regex },
+        { quisines: regex }, // Add quisines to the search criteria
       ],
     });
 
