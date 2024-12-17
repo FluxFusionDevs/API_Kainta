@@ -27,3 +27,14 @@ exports.updateRating = async ({ userId, rating, comment, establishmentId }) => {
   return updatedRating;
 };
 
+exports.deleteRating = async ({ establishmentId, _id }) => {
+  const establishment = await Establishment.findOneAndUpdate(
+    { _id: establishmentId },
+    { $pull: { ratings: { _id } } },
+    { new: true }
+  );
+  if (!establishment) {
+    throw new Error('Rating not found');
+  }
+  return establishment;
+}

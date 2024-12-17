@@ -9,6 +9,8 @@ exports.createRating = async (req, res, next) => {
     }
 }
 
+
+
 exports.getRatingsByEstablishmentId = async (req, res, next) => {
     try {
         const ratings = await ratingService.getRatingsByEstablishmentId(req.params.establishmentId);
@@ -22,6 +24,15 @@ exports.updateRating = async (req, res, next) => {
     try {
         const updatedRating = await ratingService.updateRating(req.body);
         res.json(updatedRating);
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.deleteRating = async (req, res, next) => {
+    try {
+        const deletedRating = await ratingService.deleteRating(req.body);
+        res.json(deletedRating);
     } catch (error) {
         next(error);
     }

@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const ratingSchema = new mongoose.Schema({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -16,6 +20,10 @@ const ratingSchema = new mongoose.Schema({
         required: true,
         min: 1,
         max: 5
+    },
+    images: {
+        type: [String],
+        default: []
     },
     comment: {
         type: String,
